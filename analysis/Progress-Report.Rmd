@@ -1,0 +1,29 @@
+
+```{r}
+library(tidyverse)
+scoreboard = read_csv("./scoreboard.csv")
+```
+
+```{r}
+head(scoreboard)
+```
+
+```{r}
+names(scoreboard)
+```
+
+
+## AI: Clean undergraduate famliy income variable. ##
+
+## Jack: Undergraduate race and gender ##
+
+## Sam: Clean the Retention Rate and Earnings ##
+
+
+## Boxplots ## 
+
+## Histograms ##
+
+## Dot plots and OLS line ##
+
+## Summary of the clean data ##
