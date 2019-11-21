@@ -107,14 +107,6 @@ scoreboard1 %>%
 
 
 ```{r}
-# scoreboard %>%
-#   filter(is.numeric(INC_PCT_LO),
-#          is.numeric(INC_PCT_M1),
-#          is.numeric(INC_PCT_M2))
-
-# scoreboard %>%
-#   filter(is.numeric(str_))
-
 
 # scoreboard1 %>%
 #   select(INSTNM:INC_PCT_H2) %>%
