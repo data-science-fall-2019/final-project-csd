@@ -20,7 +20,12 @@ library(broom)
 ## Data
 ```{r}
 scoreboard <- read_csv("../data/Most-Recent-Cohorts-All-Data-Elements.csv")
+
 ```
+
+variable of NUM[1-5]_[pri/pub]
+did not understand the meaning of **_N
+git push reject
 
 ## Clean data(family income)
 ```{r}
@@ -63,6 +68,14 @@ scoreboard %>%
          !is.na(INC_PCT_H2)) %>% 
   group_by(CONTROL) %>% 
   gather(INC_PCT_LO : INC_PCT_H2, key = "quintiles", value = "pct") %>% 
+  mutate(quintiles = replace(quintiles, quintiles == "INC_PCT_LO", "1_LOW"),
+         quintiles = replace(quintiles, quintiles == "INC_PCT_M1", "2_Median1"),
+         quintiles = replace(quintiles, quintiles == "INC_PCT_M2", "3_Median2"),
+         quintiles = replace(quintiles, quintiles == "INC_PCT_H1", "4_High1"),
+         quintiles = replace(quintiles, quintiles == "INC_PCT_H2", "5_High2")) ->
+   scoreboard1_INC
+  
+scoreboard1_INC %>% 
   ggplot(aes(x = quintiles, y = pct, fill = CONTROL))+
   geom_boxplot()+
   theme_bw()+
@@ -80,7 +93,15 @@ scoreboard1 %>%
          !is.na(IND_INC_PCT_H1),
          !is.na(IND_INC_PCT_H2)) %>% 
   group_by(CONTROL) %>% 
-  gather(IND_INC_PCT_LO : IND_INC_PCT_H2, key = "quintiles", value = "pct") %>% 
+  gather(IND_INC_PCT_LO : IND_INC_PCT_H2, key = "quintiles", value = "pct") %>%
+  mutate(quintiles = replace(quintiles, quintiles == "IND_INC_PCT_LO", "1_LOW"),
+         quintiles = replace(quintiles, quintiles == "IND_INC_PCT_M1", "2_Median1"),
+         quintiles = replace(quintiles, quintiles == "IND_INC_PCT_M2", "3_Median2"),
+         quintiles = replace(quintiles, quintiles == "IND_INC_PCT_H1", "4_High1"),
+         quintiles = replace(quintiles, quintiles == "IND_INC_PCT_H2", "5_High2")) ->
+  scoreboard1_IND
+
+scoreboard1_IND%>% 
   ggplot(aes(x = quintiles, y = pct, fill = CONTROL))+
   geom_boxplot()+
   theme_bw()+
@@ -97,11 +118,36 @@ scoreboard1 %>%
          !is.na(DEP_INC_PCT_H1),
          !is.na(DEP_INC_PCT_H2)) %>% 
   group_by(CONTROL) %>% 
-  gather(DEP_INC_PCT_LO : DEP_INC_PCT_H2, key = "quintiles", value = "pct") %>% 
+  gather(DEP_INC_PCT_LO : DEP_INC_PCT_H2, key = "quintiles", value = "pct") %>%
+  mutate(quintiles = replace(quintiles, quintiles == "DEP_INC_PCT_LO", "1_LOW"),
+         quintiles = replace(quintiles, quintiles == "DEP_INC_PCT_M1", "2_Median1"),
+         quintiles = replace(quintiles, quintiles == "DEP_INC_PCT_M2", "3_Median2"),
+         quintiles = replace(quintiles, quintiles == "DEP_INC_PCT_H1", "4_High1"),
+         quintiles = replace(quintiles, quintiles == "DEP_INC_PCT_H2", "5_High2"))->
+  scoreboard1_DEP
+
+scoreboard1_DEP%>% 
   ggplot(aes(x = quintiles, y = pct, fill = CONTROL))+
   geom_boxplot()+
   theme_bw()+
   scale_fill_colorblind()
+
+## Boxplot of DEP_IND
+scoreboard1 %>% 
+  select(CONTROL, DEP_INC_AVG, IND_INC_AVG) %>% 
+  filter(!is.na(DEP_INC_AVG),
+         !is.na(IND_INC_AVG)) %>% 
+  gather(DEP_INC_AVG:IND_INC_AVG, key = "DEP_IND", value = "AVG") %>% 
+  group_by(CONTROL) %>% 
+  ggplot(aes(x = DEP_IND, y = AVG, fill = CONTROL))+
+  geom_boxplot()+
+  theme_bw()+
+  scale_fill_colorblind()
+
+
+## Summary statistics:
+
+anova(scoreboard1_IND$IND_INC_AVG)
 
 ```
 
@@ -121,5 +167,9 @@ scoreboard1 %>%
 #   group_by(CONTROL) %>%
 #   gather(INC_PCT_LO : INC_PCT_H2, key = "type", value = "pct") %>%
 #   mutate(type = fct_reorder(type, c("INC_PCT_LO", "INC_PCT_M1", "INC_PCT_M2", "INC_PCT_H1", "INC_PCT_H2")))
+
+scoreboard %>% 
+  select(CONTROL, NUM_PUB)
+ 
 ```
 
