@@ -1,0 +1,133 @@
+---
+title: "Final project"
+author: "Ai Xiyao"
+date: "2019/11/15"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(ggthemes)
+library(broom)
+```
+
+
+## Data
+```{r}
+scoreboard <- read_csv("../data/Most-Recent-Cohorts-All-Data-Elements.csv")
+```
+
+## Clean data(family income)
+```{r}
+scoreboard %>% 
+  select(INSTNM,CONTROL,INC_PCT_LO, INC_PCT_M1,INC_PCT_M2, INC_PCT_H1, INC_PCT_H2, DEP_INC_AVG, DEP_INC_N, DEP_INC_PCT_LO, DEP_INC_PCT_M1, DEP_INC_PCT_M2, DEP_INC_PCT_H1, DEP_INC_PCT_H2, IND_INC_AVG, IND_INC_N, IND_INC_PCT_LO, IND_INC_PCT_M1, IND_INC_PCT_M2, IND_INC_PCT_H1, IND_INC_PCT_H2) %>% 
+  mutate(CONTROL = as.character(CONTROL),
+         INC_PCT_LO = as.numeric(INC_PCT_LO),
+         INC_PCT_M1 = as.numeric(INC_PCT_M1),
+         INC_PCT_M2 = as.numeric(INC_PCT_M2),
+         INC_PCT_H1 = as.numeric(INC_PCT_H1),
+         INC_PCT_H2 = as.numeric(INC_PCT_H2),
+         DEP_INC_AVG = as.numeric(DEP_INC_AVG),
+         DEP_INC_N = as.numeric(DEP_INC_N),
+         DEP_INC_PCT_LO = as.numeric(DEP_INC_PCT_LO),
+         DEP_INC_PCT_M1 = as.numeric(DEP_INC_PCT_M1),
+         DEP_INC_PCT_M2 = as.numeric(DEP_INC_PCT_M2),
+         DEP_INC_PCT_H1 = as.numeric(DEP_INC_PCT_H1),
+         DEP_INC_PCT_H2 = as.numeric(DEP_INC_PCT_H2),
+         IND_INC_AVG = as.numeric(IND_INC_AVG),
+         IND_INC_N = as.numeric(IND_INC_N),
+         IND_INC_PCT_LO = as.numeric(IND_INC_PCT_LO),
+         IND_INC_PCT_M1 = as.numeric(IND_INC_PCT_M1),
+         IND_INC_PCT_M2 = as.numeric(IND_INC_PCT_M2),
+         IND_INC_PCT_H1 = as.numeric(IND_INC_PCT_H1),
+         IND_INC_PCT_H2 = as.numeric(IND_INC_PCT_H2)) %>% 
+   mutate(CONTROL = replace(CONTROL, CONTROL == "1", "1-public"),
+         CONTROL = replace(CONTROL, CONTROL == "2", "2-private nonprofit"),
+         CONTROL = replace(CONTROL, CONTROL == "3", "3-private for-profit"))->
+  scoreboard1
+
+
+## boxplot of INC_PCT_, group by university type
+
+  scoreboard1 %>% 
+  select(INSTNM:INC_PCT_H2) %>% 
+  filter(!is.na(INC_PCT_LO),
+         !is.na(INC_PCT_M1),
+         !is.na(INC_PCT_M2),
+         !is.na(INC_PCT_H1),
+         !is.na(INC_PCT_H2)) %>% 
+  group_by(CONTROL) %>% 
+  gather(INC_PCT_LO : INC_PCT_H2, key = "quintiles", value = "pct") %>% 
+  ggplot(aes(x = quintiles, y = pct, fill = CONTROL))+
+  geom_boxplot()+
+  theme_bw()+
+  scale_fill_colorblind()
+
+
+## boxplot of independent 
+scoreboard1 %>% 
+  select(INSTNM,CONTROL,IND_INC_AVG, IND_INC_N, IND_INC_PCT_LO, IND_INC_PCT_M1, IND_INC_PCT_M2, IND_INC_PCT_H1, IND_INC_PCT_H2) %>% 
+  filter(!is.na(IND_INC_AVG),
+         !is.na(IND_INC_N),
+         !is.na(IND_INC_PCT_LO),
+         !is.na(IND_INC_PCT_M1),
+         !is.na(IND_INC_PCT_M2),
+         !is.na(IND_INC_PCT_H1),
+         !is.na(IND_INC_PCT_H2)) %>% 
+  group_by(CONTROL) %>% 
+  gather(IND_INC_PCT_LO : IND_INC_PCT_H2, key = "quintiles", value = "pct") %>% 
+  ggplot(aes(x = quintiles, y = pct, fill = CONTROL))+
+  geom_boxplot()+
+  theme_bw()+
+  scale_fill_colorblind()
+
+##boxplot of dependent
+scoreboard1 %>% 
+  select(INSTNM,CONTROL,DEP_INC_AVG, DEP_INC_N, DEP_INC_PCT_LO, DEP_INC_PCT_M1, DEP_INC_PCT_M2, DEP_INC_PCT_H1, DEP_INC_PCT_H2) %>% 
+  filter(!is.na(DEP_INC_AVG),
+         !is.na(DEP_INC_N),
+         !is.na(DEP_INC_PCT_LO),
+         !is.na(DEP_INC_PCT_M1),
+         !is.na(DEP_INC_PCT_M2),
+         !is.na(DEP_INC_PCT_H1),
+         !is.na(DEP_INC_PCT_H2)) %>% 
+  group_by(CONTROL) %>% 
+  gather(DEP_INC_PCT_LO : DEP_INC_PCT_H2, key = "quintiles", value = "pct") %>% 
+  ggplot(aes(x = quintiles, y = pct, fill = CONTROL))+
+  geom_boxplot()+
+  theme_bw()+
+  scale_fill_colorblind()
+
+```
+
+
+```{r}
+# scoreboard %>%
+#   filter(is.numeric(INC_PCT_LO),
+#          is.numeric(INC_PCT_M1),
+#          is.numeric(INC_PCT_M2))
+
+# scoreboard %>%
+#   filter(is.numeric(str_))
+
+
+# scoreboard1 %>%
+#   select(INSTNM:INC_PCT_H2) %>%
+#   filter(!is.na(INC_PCT_LO),
+#          !is.na(INC_PCT_M1),
+#          !is.na(INC_PCT_M2),
+#          !is.na(INC_PCT_H1),
+#          !is.na(INC_PCT_H2)) %>%
+#   mutate(CONTROL = replace(CONTROL, CONTROL == "1", "1-public"),
+#          CONTROL = replace(CONTROL, CONTROL == "2", "2-private nonprofit"),
+#          CONTROL = replace(CONTROL, CONTROL == "3", "3-private for-profit")) %>%
+#   group_by(CONTROL) %>%
+#   gather(INC_PCT_LO : INC_PCT_H2, key = "type", value = "pct") %>%
+#   mutate(type = fct_reorder(type, c("INC_PCT_LO", "INC_PCT_M1", "INC_PCT_M2", "INC_PCT_H1", "INC_PCT_H2")))
+```
+
