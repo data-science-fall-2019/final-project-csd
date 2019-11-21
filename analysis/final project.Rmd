@@ -2,7 +2,7 @@
 title: "Final project"
 author: "Ai Xiyao"
 date: "2019/11/15"
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -147,7 +147,6 @@ scoreboard1 %>%
 
 ## Summary statistics:
 
-anova(scoreboard1_IND$IND_INC_AVG)
 
 ```
 
@@ -168,8 +167,8 @@ anova(scoreboard1_IND$IND_INC_AVG)
 #   gather(INC_PCT_LO : INC_PCT_H2, key = "type", value = "pct") %>%
 #   mutate(type = fct_reorder(type, c("INC_PCT_LO", "INC_PCT_M1", "INC_PCT_M2", "INC_PCT_H1", "INC_PCT_H2")))
 
-scoreboard %>% 
-  select(CONTROL, NUM_PUB)
+# scoreboard %>% 
+#   select(CONTROL, NUM_PUB)
  
 ```
 
