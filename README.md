@@ -1,4 +1,4 @@
-# Title for Project
+# The College Scorecard Project
 
-1. Do 1
-2. Do 2
+1. 
+2. Summary the income data by boxplots
