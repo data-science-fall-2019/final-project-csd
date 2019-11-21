@@ -1,0 +1,144 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Progress Report ##
+
+### Potential Topic: Determine the relationship between earnings and retention rates of institutions ###
+
+### Idea: Create a shiny app that will generate boxplots, barplots, scatterplots, OLS line and t-test results ###
+
+```{r}
+library(tidyverse)
+library(broom)
+```
+
+**Read the data**
+```{r, message = FALSE}
+scoreboard = read_csv("./scoreboard.csv")
+```
+
+**Extract the names of scoreboard**
+```{r}
+namefile = names(scoreboard)
+```
+
+**Extract the variable names for the earnings**
+```{r}
+data.frame(namefile) %>%
+  filter(str_detect(namefile, "GT_"))
+```
+
+**Extract the variable names for the retention rates**
+```{r}
+data.frame(namefile) %>%
+  filter(str_detect(namefile, "RET_"))
+```
+
+
+**Subset the scoreboard dataframe with retention rate variables and earnings variables**
+```{r}
+scoreboard %>%
+  dplyr::select(c("INSTNM", "RET_FT4", "RET_FTL4", "RET_PT4", "RET_PTL4", "RET_FT4_POOLED", "RET_FTL4_POOLED", "RET_PT4_POOLED", "RET_PTL4_POOLED", "POOLYRSRET_FT", "POOLYRSRET_PT", "GT_28K_P6", "GT_28K_P8", "GT_28K_P10")) %>%
+  rename("Institution" = 1, "Fulltime-Four-Retention" = 2, "Full-Less-Four-Retention" = 3, "Part-Four-Retention" = 4, "Part-Less-Four-Retention" = 5, "Full-Four-Pooled-Variance" = 6, "Full-Less-Four-Pooled-Variance" = 7, "Part-Four-Pooled-Variance" = 8, "Part-Less-Four-Pooled-Variance" = 9, 
+"Full-Cohort" = 10, "Part-Cohort" = 11, "Earnings after 6 years" = 12, "Earnings after 8 years" = 13, "Earnings after 10 years" = 14) ->
+  retention_scoreboard
+```
+
+
+```{r}
+head(retention_scoreboard)
+```
+
+**Subset the data for four-year institutions**
+```{r}
+retention_scoreboard %>%
+  select("Institution", "Fulltime-Four-Retention", "Part-Four-Retention", "Earnings after 6 years", "Earnings after 8 years", "Earnings after 10 years") %>%
+  filter(`Fulltime-Four-Retention` != "NULL") %>%
+  filter(`Part-Four-Retention` != "NULL") ->
+  four_year_institution_retention
+```
+
+**Gather the data for retention rates based on full time or part time students**
+```{r}
+four_year_institution_retention %>%
+  rename("FullTime" = 2, "PartTime" = 3) %>%
+ gather("FullTime", "PartTime", key = "Type", value = "Retention") %>%
+  filter(`Earnings after 6 years` != "PrivacySuppressed") %>%
+  mutate(Retention = as.numeric(Retention)) %>%
+  mutate(`Earnings after 6 years` = as.numeric(`Earnings after 6 years`)) %>%
+  mutate(`Earnings after 8 years` = as.numeric(`Earnings after 8 years`)) %>%
+  mutate(`Earnings after 10 years` = as.numeric(`Earnings after 10 years`)) ->
+  
+  four_year_institution
+```
+
+
+**Create a barplot for retention rates based on student types for four-year institutions**
+```{r}
+ggplot(four_year_institution, aes(x = Type, y = Retention)) + 
+         geom_col() + 
+  theme_bw()
+```
+
+**Create a bboxplot of retention rates based on types for four-year institutions**
+```{r}
+ggplot(four_year_institution, aes(x = Type, y = Retention)) + 
+  geom_boxplot() + 
+  theme_bw()
+```
+
+**Create a scatterplot and an OLS line for Earnings after 6 years vs Retention rates**
+```{r}
+ggplot(four_year_institution, aes(x = Retention, y = `Earnings after 6 years`)) + 
+  geom_point(na.rm = TRUE) + 
+  geom_smooth(method = "lm", formula = y~x, se = F, na.rm = TRUE) + 
+  theme_bw()
+```
+
+**Fit a linear model for earnings after 6 years vs retention rate**
+```{r}
+lmout1 = lm(`Earnings after 6 years` ~ Retention, data = four_year_institution)
+
+tidy(lmout1)
+```
+
+**Run a t-test for different types of students for the retention rate**
+```{r}
+tout1 = t.test(Retention ~ Type, alternative = "greater", data = four_year_institution)
+tidy_tout1 = tidy(tout1)
+tidy_tout1$p.value
+```
+
+**Set up the hypotheses for the t-test**
+
+**H0: FullTime = PartTime**
+
+**HA: FullTime > PartTime**
+
+**Since the p-value is extremely smaller than level of significance(0.05), we reject the null hypothesis and conclude that FullTime > PartTime**
+
+
+
+
+
+
+
+
+
+## AI: Clean undergraduate famliy income variable. ##
+
+## Jack: Undergraduate race and gender ##
+
+## Sam: Clean the Retention Rate and Earnings ##
+
+
+## Boxplots ## 
+
+## Histograms ##
+
+## Dot plots and OLS line ##
+
+## Summary of the clean data ##
