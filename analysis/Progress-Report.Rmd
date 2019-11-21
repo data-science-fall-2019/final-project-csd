@@ -1,16 +1,115 @@
 
 ```{r}
 library(tidyverse)
+library(broom)
+```
+
+
+```{r, message = FALSE}
 scoreboard = read_csv("./scoreboard.csv")
 ```
 
+
+
 ```{r}
-head(scoreboard)
+namefile = names(scoreboard)
 ```
 
 ```{r}
-names(scoreboard)
+data.frame(namefile) %>%
+  filter(str_detect(namefile, "GT_"))
 ```
+
+```{r}
+data.frame(namefile) %>%
+  filter(str_detect(namefile, "RET_"))
+```
+
+
+
+
+```{r}
+scoreboard %>%
+  dplyr::select(c("INSTNM", "RET_FT4", "RET_FTL4", "RET_PT4", "RET_PTL4", "RET_FT4_POOLED", "RET_FTL4_POOLED", "RET_PT4_POOLED", "RET_PTL4_POOLED", "POOLYRSRET_FT", "POOLYRSRET_PT", "GT_28K_P6", "GT_28K_P8", "GT_28K_P10")) %>%
+  rename("Institution" = 1, "Fulltime-Four-Retention" = 2, "Full-Less-Four-Retention" = 3, "Part-Four-Retention" = 4, "Part-Less-Four-Retention" = 5, "Full-Four-Pooled-Variance" = 6, "Full-Less-Four-Pooled-Variance" = 7, "Part-Four-Pooled-Variance" = 8, "Part-Less-Four-Pooled-Variance" = 9, 
+"Full-Cohort" = 10, "Part-Cohort" = 11, "Earnings after 6 years" = 12, "Earnings after 8 years" = 13, "Earnings after 10 years" = 14) ->
+  retention_scoreboard
+```
+
+```{r}
+retention_scoreboard
+```
+
+
+```{r}
+retention_scoreboard %>%
+  select("Institution", "Fulltime-Four-Retention", "Part-Four-Retention", "Earnings after 6 years", "Earnings after 8 years", "Earnings after 10 years") %>%
+  filter(`Fulltime-Four-Retention` != "NULL") %>%
+  filter(`Part-Four-Retention` != "NULL") ->
+  four_year_institution_retention
+```
+
+```{r}
+four_year_institution_retention %>%
+  rename("FullTime" = 2, "PartTime" = 3) %>%
+ gather("FullTime", "PartTime", key = "Type", value = "Retention") %>%
+  filter(`Earnings after 6 years` != "PrivacySuppressed") %>%
+  mutate(Retention = as.numeric(Retention)) %>%
+  mutate(`Earnings after 6 years` = as.numeric(`Earnings after 6 years`)) %>%
+  mutate(`Earnings after 8 years` = as.numeric(`Earnings after 8 years`)) %>%
+  mutate(`Earnings after 10 years` = as.numeric(`Earnings after 10 years`)) ->
+  
+  four_year_institution
+```
+
+
+
+
+
+```{r}
+ggplot(four_year_institution, aes(x = Type, y = Retention)) + 
+         geom_col() + 
+  theme_bw()
+```
+
+```{r}
+ggplot(four_year_institution, aes(x = Type, y = Retention)) + 
+  geom_boxplot() + 
+  theme_bw()
+```
+
+```{r}
+ggplot(four_year_institution, aes(x = Retention, y = `Earnings after 6 years`)) + 
+  geom_point(na.rm = TRUE) + 
+  geom_smooth(method = "lm", formula = y~x, se = F, na.rm = TRUE) + 
+  theme_bw()
+```
+
+
+```{r}
+lmout1 = lm(`Earnings after 6 years` ~ Retention, data = four_year_institution)
+
+tidy(lmout1)
+```
+
+```{r}
+tout1 = t.test(Retention ~ Type, alternative = "greater", data = four_year_institution)
+tidy_tout1 = tidy(tout1)
+tidy_tout1$p.value
+```
+
+**Set up the hypotheses for the t-test**
+
+H0: FullTime = PartTime
+
+HA: FullTime > PartTime
+
+
+
+
+
+
+
 
 
 ## AI: Clean undergraduate famliy income variable. ##
