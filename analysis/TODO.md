@@ -19,6 +19,8 @@ What is more, I will make linear regression for average faculty salary with out 
 
 
 Ai:
+
+
 Till now, I have already made several boxplots about the family income. 
 Later, I prefer to use ANOVA to analysis whether these five different income level would have the same mean of the percentage bewteen these three different type of universities. 
 
