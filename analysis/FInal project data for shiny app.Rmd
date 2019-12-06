@@ -1,0 +1,31 @@
+---
+title: "Final project shiny app data"
+author: "Ai Xiyao"
+date: "2019/12/6"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+## independ:
+scoreboard1_IND %>% 
+  mutate(Type = "Independent") %>% 
+  select(INSTNM,CONTROL,quintiles,pct,Type)->
+  score_1 
+
+## depend:
+scoreboard1_DEP %>% 
+  mutate(Type = "Dependent") %>% 
+  select(INSTNM,CONTROL,quintiles,pct,Type)->
+  score_2 
+
+## Combine
+
+whole_income <- rbind(score_1, score_2)
+
+## this is the data what I want 
+```
+
