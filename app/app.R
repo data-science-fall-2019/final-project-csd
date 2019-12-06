@@ -7,7 +7,7 @@ library(shinythemes)
 
 
 
-college_type <- c("Public", "private nonprofit","private for-profit")
+college_type <- c("1-public", "2-private nonprofit","3-private for-profit")
 student_type <- c("Independent", "Dependent")
 
 
@@ -26,13 +26,13 @@ ui <- fluidPage(
              sidebarLayout(
                sidebarPanel(width = 4,
                             numericInput("income", "Family Income", value = 0),
-                            radioButtons("college_type", "Which type of college do you prefer to check?",
-                                         choices = college_type),
-                            radioButtons("Student_type", "Which type of student do you prefer to check?",
-                                         choices = student_type)),
+                            checkboxGroupInput("college", "Which type of univeristy do you prefer to check?", 
+                                               choices = college_type),
+                            checkboxGroupInput("student", "Which type of student do you prefer to check?",
+                                           choices = student_type)),
                mainPanel(width = 8,
                          plotOutput("boxplot"),
-                         tableOutput("test"))
+                         tableOutput("table"))                          
              )),
     tabPanel("Sam's")
   )
@@ -42,6 +42,117 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  
+  output$boxplot <- renderPlot({
+    if(input$income > 0 &input$income < 30000){
+      whole_income %>% 
+        filter(quintiles == "1_Low") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        ggplot(aes(x = CONTROL, y = pct, fill = CONTROL))+
+        geom_boxplot()+
+        theme_bw()+
+        ggtitle("Low Level")->
+        pl
+    }else if(input$income > 30000 & input$income < 48000 ){
+      whole_income %>% 
+        filter(quintiles == "2_Median1") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        ggplot(aes(x = CONTROL, y = pct, fill = CONTROL))+
+        geom_boxplot()+
+        theme_bw()+
+        ggtitle("Median1 Level")->
+        pl
+    }else if(input$income > 48000 & input$income < 75000 ){
+      whole_income %>% 
+        filter(quintiles == "3_Median2") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        ggplot(aes(x = CONTROL, y = pct, fill = CONTROL))+
+        geom_boxplot()+
+        theme_bw()+
+        ggtitle("Median2 Level")->
+        pl
+    }else if(input$income > 75000 & input$income < 110000 ){
+      whole_income %>% 
+        filter(quintiles == "4_High1") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        ggplot(aes(x = CONTROL, y = pct, fill = CONTROL))+
+        geom_boxplot()+
+        theme_bw()+
+        ggtitle("High1 Level")->
+        pl
+    }else{
+      whole_income %>% 
+        filter(quintiles == "5_High2") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        ggplot(aes(x = CONTROL, y = pct, fill = CONTROL))+
+        geom_boxplot()+
+        theme_bw()+
+        ggtitle("High2 Level")->
+        pl
+    }
+    pl
+  })
+  
+  output$table <- renderTable({
+    if(input$income > 0 &input$income < 30000){
+      whole_income %>% 
+        ungroup() %>% 
+        filter(quintiles == "1_Low") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        arrange(-desc(pct)) %>% 
+        select(INSTNM) %>% 
+        head(5)->
+        dt
+    }else if(input$income > 30000 & input$income < 48000 ){
+      whole_income %>% 
+        ungroup() %>% 
+        filter(quintiles == "2_Median1") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        arrange(-desc(pct)) %>% 
+        select(INSTNM) %>% 
+        head(5)->
+        dt
+    }else if(input$income > 48000 & input$income < 75000 ){
+      whole_income %>% 
+        ungroup() %>% 
+        filter(quintiles == "3_Median2") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        arrange(-desc(pct)) %>% 
+        select(INSTNM) %>% 
+        head(5)->
+        dt
+    }else if(input$income > 75000 & input$income < 110000 ){
+      whole_income %>% 
+        ungroup() %>% 
+        filter(quintiles == "4_High1") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        arrange(-desc(pct)) %>% 
+        select(INSTNM) %>% 
+        head(5)->
+        dt
+    }else{
+      whole_income %>% 
+        ungroup() %>% 
+        filter(quintiles == "5_High2") %>% 
+        filter(Type == input$student,
+               CONTROL == input$college) %>% 
+        arrange(-desc(pct)) %>% 
+        select(INSTNM) %>% 
+        head(5)->
+        dt
+    }
+    dt
+  })
+
   
 }
 
