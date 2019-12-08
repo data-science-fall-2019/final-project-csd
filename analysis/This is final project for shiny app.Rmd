@@ -1,0 +1,160 @@
+---
+title: "this is final project for shiny app"
+author: "Lin Sung Chieh"
+date: "12/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+shiny app
+```{r}
+#works
+library(shiny)
+library(tidyverse)
+library(ggthemes)
+library(shinyWidgets)
+library(shinythemes)
+scoreboard <- read_csv("../data/scoreboard.csv", na = "NULL")
+
+#cleaning my data
+scoreboard %>%
+  select(INSTNM, AVGFACSAL, TUITIONFEE_IN, TUITIONFEE_OUT, CONTROL) %>%
+  mutate(Ave_Faculty_Salary  = as.numeric(AVGFACSAL),
+         TUITIONFEE_IN = as.numeric(TUITIONFEE_IN),
+         TUITIONFEE_OUT = as.numeric(TUITIONFEE_OUT)) %>%
+  mutate(CONTROL = replace(CONTROL, CONTROL == "1", "1-public"),
+         CONTROL = replace(CONTROL, CONTROL == "2", "2-private nonprofit"),
+         CONTROL = replace(CONTROL, CONTROL == "3", "3-private for-profit")) %>%
+  select(-AVGFACSAL) %>%
+  na.omit() -> salary_tuition
+
+scoreboard %>%
+  filter(TUITIONFEE_IN > 60000) -> 
+  case
+
+
+ui <- fluidPage(
+  theme = shinytheme("superhero"),
+  titlePanel("Visualize College Scoreboard Data"),
+  sidebarLayout(
+    sidebarPanel(
+      varSelectInput("x", "x", data = salary_tuition, 
+                                selected = "Ave_Faculty_Salary"),
+      checkboxInput("logx", "Log"),
+      varSelectInput("y", "y", data = salary_tuition, 
+                                selected = "TUITIONFEE_IN"),
+      checkboxInput("logy", "Log"),
+      checkboxInput("ols", "OLS?"),
+      checkboxInput("boxplot", "Boxplot"),
+      checkboxInput("filter", "extreme case"),
+      tableOutput("test_results"),
+      tableOutput("name_out")
+      
+    ),
+    mainPanel(
+      plotOutput("plot"),
+      plotOutput("boxplot")
+    )
+  )
+  
+  
+  
+)
+
+server <- function(input, output, session) {
+
+  output$test_results <- renderTable({
+    if (!input$logx & !input$logy) {
+      lmout <- lm(salary_tuition[[input$y]] ~ salary_tuition[[input$x]])
+    } else if (!input$logx & input$logy) {
+      lmout <- lm(salary_tuition[[input$y]] ~ log2(salary_tuition[[input$x]]))
+    } else if (input$logx & !input$logy) {
+      lmout <- lm(log2(salary_tuition[[input$y]]) ~ salary_tuition[[input$x]])
+    } else {
+      lmout <- lm(log2(salary_tuition[[input$y]]) ~ log2(salary_tuition[[input$x]]))
+    }
+
+    tidy(lmout, conf.int = TRUE) %>%
+      select(Term = term, Estimate = estimate, Lower = conf.low, Upper = conf.high) ->
+      tout
+
+    tout$Term[[1]] <- "Intercept"
+    tout$Term[[2]] <- "Slope"
+    tout
+    })
+
+  output$plot <- renderPlot({
+    salary_tuition %>%
+      ggplot(aes(x = !!input$x, y = !!input$y, color = CONTROL)) +
+      theme_bw() +
+      scale_color_colorblind()->
+      pl
+    
+    
+    if (is.numeric(salary_tuition[[input$x]]) & is.numeric(salary_tuition[[input$y]])) {
+       pl <- pl + geom_point()
+    } else if (!is.numeric(salary_tuition[[input$x]]) & is.numeric(salary_tuition[[input$y]])) {
+      pl <- pl + geom_boxplot()
+    } else if (is.numeric(salary_tuition[[input$x]]) & !is.numeric(salary_tuition[[input$y]])) {
+      pl <- pl + geom_boxplot()
+    } else {
+      pl <- pl + geom_jitter()
+    }
+
+    
+    if (input$logx & is.numeric(salary_tuition[[input$x]])) {
+      pl <- pl + scale_x_log10()
+    }
+
+    if (input$logy & is.numeric(salary_tuition[[input$y]])) {
+      pl <- pl + scale_y_log10()
+    }
+
+    if (input$ols & is.numeric(salary_tuition[[input$x]]) &
+        is.numeric(salary_tuition[[input$y]])) {
+      pl <- pl + geom_smooth(se = FALSE, method = "lm")
+    }
+
+    pl
+    
+    
+  })
+    
+    
+    
+  output$boxplot <- renderPlot({
+  
+    salary_tuition %>%
+      ggplot(aes(x = !!input$x, y = !!input$y, color = CONTROL)) +
+      theme_bw() +
+      scale_color_colorblind() -> 
+      pl_1
+    
+    
+    if(input$boxplot & is.numeric(salary_tuition[[input$x]]) &
+       is.numeric(salary_tuition[[input$y]])) {
+      pl_1 <- pl_1 + geom_boxplot()
+    }
+    
+    pl_1
+    
+  })
+    
+  output$name_out <- renderPrint({
+    if(input$filter){
+      print(c("School: Aviator College of Aeronautical Science and Technology",
+            "Tuition: 74514",
+            "Average Facultys' Salary: 2136 "))
+    }
+    
+  })
+
+
+ 
+}
+
+shinyApp(ui, server)
+```
