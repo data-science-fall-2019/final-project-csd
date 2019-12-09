@@ -203,8 +203,17 @@ four_year_institution %>%
   four_year_data
 ```
 
+```{r}
+four_year_institution
+```
 
+```{r}
+write.csv(four_year_institution, file = "four_year_institution.csv", row.names = F)
+```
 
+```{r}
+write.csv(four_year_data, file = "four_year_data.csv", row.names = F)
+```
 
 
 
