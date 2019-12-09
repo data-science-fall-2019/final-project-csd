@@ -5,6 +5,7 @@ library(ggthemes)
 library(shinyWidgets)
 library(shinythemes)
 library(ggstance)
+library(DT)
 
 scoreboard = read_csv("../data/scoreboard.csv")
 
@@ -231,7 +232,7 @@ ui <- fluidPage(
                  checkboxInput("log2", "Log"), 
                  varSelectInput("var2", "Variable 2", data = four_year_data),
                  checkboxInput("log3", "Log"), 
-                 checkboxInput("ols", "OLS!"), 
+                 checkboxInput("ols1", "OLS!"), 
                  varSelectInput("var3", "Variable 3", data = four_year_data), 
                  sliderInput("bins", "Bins", min = 1, max = 100, value = 20),
                  checkboxInput("log4", "Log"), 
@@ -464,7 +465,7 @@ server <- function(input, output, session) {
   
   
   
-  output$table = renderDataTable({
+  output$table = DT::renderDataTable({
     if(input$parttime == TRUE & input$fulltime == FALSE) {
       
       return(df() %>%
@@ -499,7 +500,7 @@ server <- function(input, output, session) {
       if(input$log3 == TRUE) {
         p = p + scale_y_log10()
       }
-      if(input$ols == TRUE) {
+      if(input$ols1 == TRUE) {
         p = p + geom_smooth(method = "lm", se = F)
       }
       

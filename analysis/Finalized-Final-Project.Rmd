@@ -1,10 +1,11 @@
-
-
 ```{r}
+library(shiny)
 library(tidyverse)
 library(broom)
 library(ggplot2)
 library(ggthemes)
+library(DT)
+library(ggstance)
 ```
 
 ```{r, message = FALSE}
@@ -252,7 +253,7 @@ ui <- fluidPage(
   checkboxInput("log2", "Log"), 
   varSelectInput("var2", "Variable 2", data = four_year_data),
   checkboxInput("log3", "Log"), 
-  checkboxInput("ols", "OLS!"), 
+  checkboxInput("ols1", "OLS!"), 
   varSelectInput("var3", "Variable 3", data = four_year_data), 
   sliderInput("bins", "Bins", min = 1, max = 100, value = 20),
   checkboxInput("log4", "Log"), 
@@ -264,8 +265,8 @@ ui <- fluidPage(
   mainPanel(
     fluidRow(
       splitLayout(cellWidths = c("300px", "300px"), plotOutput("scatter"), plotOutput("hist"))), 
-  column(12, dataTableOutput("ttest", width = "300px", height = "5px")), 
-  column(11, dataTableOutput("table", width = "300px", height = "5px")), 
+  column(12, dataTableOutput("ttest", width = "200px", height = "10px")), 
+  column(11, dataTableOutput("table", width = "200px", height = "10px")), 
   )
                
   ))
@@ -485,7 +486,7 @@ server <- function(input, output, session) {
   
   
   
-  output$table = renderDataTable({
+  output$table = DT::renderDataTable({
       if(input$parttime == TRUE & input$fulltime == FALSE) {
     
     return(df() %>%
@@ -520,7 +521,7 @@ server <- function(input, output, session) {
     if(input$log3 == TRUE) {
       p = p + scale_y_log10()
     }
-    if(input$ols == TRUE) {
+    if(input$ols1 == TRUE) {
       p = p + geom_smooth(method = "lm", se = F)
     }
     
@@ -564,7 +565,7 @@ server <- function(input, output, session) {
     
   })
   
-  output$ttest = renderDataTable({
+  output$ttest = DT::renderDataTable({
     if(class(four_year_data[[input$var1]]) == "numeric" & class(four_year_data[[input$var2]]) == "numeric") {
       df1 = reactive({
         t.test(four_year_data[[input$var1]], four_year_data[[input$var2]]) %>%
