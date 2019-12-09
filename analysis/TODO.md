@@ -9,8 +9,9 @@ I'd like to create reactive linear regressions and t-tests and generate the resp
 
 # Jack:
 
-I will perform the undergraduate Student Body by Race and Gender.
-Also, I will perform the average faculty salary with out state tuition fee and average faculty salary with in state tuition.
+I will create some boxplots, scatter plot and histogram based on average faculty salary vs tuition in/out state.
+For my shiny app, I will perform the average faculty salary with out state tuition fee and average faculty salary with in state tuition.
+I will also create a linear regression and see if there is any special case in boxplots. 
 
 From the shiny app, I will make plot to visualize with undergraduate Student Body by Race and Gender.
 What is more, I will make linear regression for average faculty salary with out state tuition fee and average faculty salary with in state tuition.
