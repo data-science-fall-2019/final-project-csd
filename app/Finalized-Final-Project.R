@@ -8,6 +8,10 @@ library(ggstance)
 library(DT)
 
 scoreboard = read_csv("../data/scoreboard.csv")
+four_year_institution = read_csv("../output/four_year_institution.csv")
+four_year_data = read_csv("../output/four_year_data.csv")
+
+
 
 
 scoreboard %>% 
@@ -157,34 +161,7 @@ scoreboard %>%
   case
 
 
-scoreboard %>%
-  dplyr::select(c("INSTNM", "CITY", "STABBR", "ZIP", "INSTURL", "RET_FT4", "RET_FTL4", "RET_PT4", "RET_PTL4", "RET_FT4_POOLED", "RET_FTL4_POOLED", "RET_PT4_POOLED", "RET_PTL4_POOLED", "POOLYRSRET_FT", "POOLYRSRET_PT", "GT_28K_P6", "GT_28K_P8", "GT_28K_P10")) %>%
-  rename("Institution" = 1, "City" = 2, "State" = 3, "Zip" = 4, "url" = 5, "Fulltime-Four-Retention" = 6, "Full-Less-Four-Retention" = 7, "Part-Four-Retention" = 8, "Part-Less-Four-Retention" = 9, "Full-Four-Pooled-Variance" = 10, "Full-Less-Four-Pooled-Variance" = 11, "Part-Four-Pooled-Variance" = 12, "Part-Less-Four-Pooled-Variance" = 13, 
-         "Full-Cohort" = 14, "Part-Cohort" = 15, "Earnings after 6 years" = 16, "Earnings after 8 years" = 17, "Earnings after 10 years" = 18) ->
-  retention_scoreboard
 
-
-retention_scoreboard %>%
-  select("Institution", "Fulltime-Four-Retention", "Part-Four-Retention", "Earnings after 6 years", "Earnings after 8 years", "Earnings after 10 years", "City", "State", "Zip", "url") %>%
-  filter(`Fulltime-Four-Retention` != "NULL") %>%
-  filter(`Part-Four-Retention` != "NULL") ->
-  four_year_institution_retention
-
-four_year_institution_retention %>%
-  rename("FullTime" = 2, "PartTime" = 3) %>%
-  gather("FullTime", "PartTime", key = "Type", value = "Retention") %>%
-  filter(`Earnings after 6 years` != "PrivacySuppressed") %>%
-  mutate(Retention = as.numeric(Retention)) %>%
-  mutate(`Earnings after 6 years` = as.numeric(`Earnings after 6 years`)) %>%
-  mutate(`Earnings after 8 years` = as.numeric(`Earnings after 8 years`)) %>%
-  mutate(`Earnings after 10 years` = as.numeric(`Earnings after 10 years`)) ->
-  
-  four_year_institution
-
-
-four_year_institution %>%
-  select("Earnings after 6 years", "Earnings after 8 years", "Earnings after 10 years", "State", "Type", "Retention") ->
-  four_year_data
 
 
 
