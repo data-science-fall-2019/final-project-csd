@@ -445,11 +445,13 @@ server <- function(input, output, session) {
     
   })
   
-  output$name_out <- renderPrint({
+  output$name_out <- renderTable({
+    salary_tuition %>%
+      filter(TUITIONFEE_IN > 60000) %>%
+      select(INSTNM, TUITIONFEE_IN, TUITIONFEE_OUT) ->
+      case
     if(input$filter){
-      print(c("School: Aviator College of Aeronautical Science and Technology",
-              "Tuition: 74514",
-              "Average Facultys' Salary: 2136 "))
+      head(case)
     }
     
   })
