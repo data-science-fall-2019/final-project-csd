@@ -1,3 +1,8 @@
+
+
+
+
+
 ```{r}
 library(shiny)
 library(tidyverse)
@@ -11,6 +16,8 @@ library(ggstance)
 ```{r, message = FALSE}
 scoreboard = read_csv("../data/scoreboard.csv")
 ```
+
+
 
 
 ```{r}
@@ -42,7 +49,9 @@ scoreboard %>%
   scoreboard1
 
 
+
 ## boxplot of INC_PCT_, group by university type
+
 
 scoreboard1 %>% 
   select(INSTNM:INC_PCT_H2) %>% 
@@ -203,9 +212,7 @@ four_year_institution %>%
   four_year_data
 ```
 
-```{r}
-four_year_institution
-```
+
 
 ```{r}
 write.csv(four_year_institution, file = "four_year_institution.csv", row.names = F)
@@ -213,6 +220,18 @@ write.csv(four_year_institution, file = "four_year_institution.csv", row.names =
 
 ```{r}
 write.csv(four_year_data, file = "four_year_data.csv", row.names = F)
+```
+
+```{r}
+write.csv(whole_income, file = "whole_income.csv", row.names = F)
+```
+
+```{r}
+write.csv(case, file = "extreme_case.csv", row.names = F)
+```
+
+```{r}
+write.csv(salary_tuition, file = "salary_tuition.csv", row.names = F)
 ```
 
 
