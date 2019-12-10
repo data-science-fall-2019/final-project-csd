@@ -20,7 +20,6 @@ student_type <-c("Independent", "Dependent")
 
 
 
-
 ui <- fluidPage(
   titlePanel("College Score Card"),
   tabsetPanel(
