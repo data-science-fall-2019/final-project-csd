@@ -7,4 +7,5 @@ We are looking at the this college scorecard dataset, which provide us some basi
 3. Then, we're looking at Earning vs Retention. 
   
 The methods that we use include histograns, scatterplots, linear regression, t-test and ANOVA test.
+
 In the Shiny app, we used reactive dataframes, dataframes, graphs, t-test tables.
